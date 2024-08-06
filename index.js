@@ -4,6 +4,9 @@ dotenv.config();
 const express = require('express');
 const route= require('./routes/user');
 const bodypartroute= require('./routes/bodypart');
+const colorroute= require('./routes/colors');
+const shaperoute= require('./routes/shapes');
+const alphabetroute= require('./routes/alphabets');
 
 const {connectToMongoose} = require('./connection')
 const url = process.env.MONGO_URI;
@@ -18,4 +21,7 @@ app.use(express.json());
 connectToMongoose(url).then(() => console.log("db connected"));
 app.use('/user', route);
 app.use('/bodypart', bodypartroute);
+app.use('/color', colorroute);
+app.use('/shape', shaperoute);
+app.use('/alphabet', alphabetroute);
 app.listen(port,() => console.log(`listening on port:${port}`));
