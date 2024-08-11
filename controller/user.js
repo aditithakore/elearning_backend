@@ -6,7 +6,7 @@ const USERAUTH = require('../model/userauth');
 const saltRounds = 10; // For bcrypt hashing
 
 async function adduser(req, res) {
-  const { email, password, contactNumber, childage, childname, childdisability } = req.body;
+  const { email, password, childage, childname, childdisability } = req.body;
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required' });
   }
@@ -17,7 +17,7 @@ async function adduser(req, res) {
 
     // Create the User document
     const newUser = await USER.create({
-      contactNumber,
+    
       childage,
       childname,
       childdisability
@@ -44,7 +44,7 @@ async function adduser(req, res) {
     }
 
     
-
+    console.log('User registered successfully');
     return res.status(201).json({ message: 'User registered successfully', token });
   } catch (error) {
     console.error('Error registering user:', error);
@@ -99,6 +99,7 @@ async function loginuser(req, res) {
     // Create a JWT token
     const token = jwt.sign({ userId: userAuth._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
+    console.error( 'Login successful' );
     return res.status(200).json({ message: 'Login successful', token });
   } catch (error) {
     console.error('Error logging in:', error);

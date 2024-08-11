@@ -7,6 +7,8 @@ const bodypartroute= require('./routes/bodypart');
 const colorroute= require('./routes/colors');
 const shaperoute= require('./routes/shapes');
 const alphabetroute= require('./routes/alphabets');
+const numberroute= require('./routes/number');
+const habitroute= require('./routes/habits');
 
 const {connectToMongoose} = require('./connection')
 const url = process.env.MONGO_URI;
@@ -24,4 +26,6 @@ app.use('/bodypart', bodypartroute);
 app.use('/color', colorroute);
 app.use('/shape', shaperoute);
 app.use('/alphabet', alphabetroute);
+app.use('/number', numberroute);
+app.use('/habit', habitroute);
 app.listen(port,() => console.log(`listening on port:${port}`));
