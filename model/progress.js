@@ -1,48 +1,28 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const moduleProgressSchema = new mongoose.Schema({
-  moduleName: { 
-    type: String, 
-    required: true 
+// Define the Progress schema
+const progressSchema = new mongoose.Schema({
+  userRef: {
+    type: mongoose.Schema.Types.ObjectId,  // Reference to a User document
+    ref: 'User',
+    required: true,
   },
-  completed: { 
-    type: Boolean, 
-    default: false 
+  gameName: {
+    type: String,  
+    required: true,
   },
-  score: { 
-    type: Number, 
-    default: 0 
+  score: {
+    type: Number,
+    required: true,
+    min: 0,  // Ensure non-negative score
   },
-  timeSpent: { 
-    type: Number, 
-    default: 0 
-  }, 
-});
+  timestamp: {
+    type: Date,
+    default: Date.now,  // Automatically store the current date and time
+  },
+}, { timestamps: true });  // Adds createdAt and updatedAt
 
-const progressSchema = new mongoose.Schema(
-  {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    modules: { 
-      type: [moduleProgressSchema], 
-      default: [] 
-    },
-    overallProgress: { 
-      type: Number, 
-      default: 0 
-    },
-    lastUpdated: { 
-      type: Date, 
-      default: Date.now },
-  },
-  {
-    timestamps: true,
-  }
-);
-
-const Progress = mongoose.model("Progress", progressSchema);
+// Create the Progress model
+const Progress = mongoose.model('Progress', progressSchema);
 
 module.exports = Progress;

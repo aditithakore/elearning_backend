@@ -28,7 +28,7 @@ async function adduser(req, res) {
     }
 
     // Create a JWT token
-    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, { expiresIn: '2h' });
+    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1000000000h' });
 
     // Create the UserAuth document
     const newUserAuth = await USERAUTH.create({
@@ -56,18 +56,30 @@ async function adduser(req, res) {
 
 
 async function getuser(req, res) {
-  const _id= req.params.id;
-  const user = await USER.findOne(
-    {_id:_id},
-    {childname:1,childage:1},
+  const token = req.headers.authorization;
+  console.log('received', token.split(' ')[1]);
+  
+  const auth = await USERAUTH.findOne(
+    {token: token.split(' ')[1].trim()},
+    {user:1, email:1},
     {new: true}
   );
-  if (!user) {
-    console.error(`user not found`);
+  console.log(auth._id);
+  
+  if (!auth) {
+    console.error(`authwronh`);
     return res.status(404).json({ error: 'User not found' });
   }
-  console.error(`user exists`);
-  console.log(user);
+  console.log("this is auth user", auth.user);
+  
+  const user = await USER.findOne(
+    {_id: auth.user},
+    {childage:1, childname:1},
+    {new: true}
+  );
+
+  console.log(`user exists`, user);
+  // console.log(user);
   return res.json({"user_details" : user}); 
 
 }
@@ -94,11 +106,11 @@ async function loginuser(req, res) {
 
     // Update last login
     userAuth.lastLogin = new Date();
-    await userAuth.save();
-
+    
     // Create a JWT token
-    const token = jwt.sign({ userId: userAuth._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
+    const token = jwt.sign({ userId: userAuth._id }, process.env.JWT_SECRET, { expiresIn: '10000000h' });
+    userAuth.token = token;
+    await userAuth.save();
     console.error( 'Login successful' );
     return res.status(200).json({ message: 'Login successful', token });
   } catch (error) {

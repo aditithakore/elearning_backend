@@ -1,23 +1,20 @@
+// routes/user.js
 const express = require('express');
-const router= express.Router();
-const {adduser,getuser,loginuser} = require('../controller/user');
-const {addprogress,getprogress,getprogressofonemodule} = require('../controller/progress');
+const router = express.Router();
+const { adduser, getuser, loginuser } = require('../controller/user');
+const { addprogress, getprogress, getprogressofonemodule } = require('../controller/progress');
+const verifyToken = require('../middleware/auth');
 
-//user routes
-//register
-router.post('/',adduser);
-router.get('/:id',getuser);
+// User routes
+router.post('/', adduser); // Register
+router.post('/login', loginuser); // Login
 
-//login
-router.post('/login',loginuser);
+// Protected routes
+router.get('/', verifyToken, getuser); // Get user info
 
-
-//progress routes
-router.post('/progress/:id',addprogress);
-router.get('/progress/:id',getprogress);
-router.get('/progress/:id/:moduleName',getprogressofonemodule);
-
-
-
+// Progress routes (protected)
+router.post('/progress/:id', verifyToken, addprogress);
+router.get('/progress/:id', verifyToken, getprogress);
+router.get('/progress/:id/:module', verifyToken, getprogressofonemodule);
 
 module.exports = router;
