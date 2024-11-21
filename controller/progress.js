@@ -1,6 +1,6 @@
 const PROGRESS = require("../model/progress");
 const USER = require("../model/user");
-const GAME = require("../model/game");
+// const GAME = require("../model/game");
 
 
 
@@ -10,6 +10,8 @@ async function addprogress(req, res) {
   
  let userId = req.params.id;
  let gameInfo = req.body;
+ console.log(gameInfo, "gameInfo--------------------------");
+ 
  const game = await PROGRESS.create(
   {userRef:userId, gameName: gameInfo.gameName,score: gameInfo.score}
  );
@@ -28,7 +30,9 @@ async function getprogress(req, res){
     if (!progress) {
       return res.json({"error": "Invalid game argument"});
      }
+     console.log(progress, "progress -------->");
      return  res.json( {"data": progress});
+
     }
 
 

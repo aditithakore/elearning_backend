@@ -55,34 +55,81 @@ async function adduser(req, res) {
 
 
 
+// async function getuser(req, res) {
+//   const token = req.headers.authorization;
+//   console.log('received', token.split(' ')[1]);
+  
+//   const auth = await USERAUTH.findOne(
+//     {token: token.split(' ')[1].trim()},
+//     {user:1, email:1},
+//     {new: true}
+//   );
+//   console.log('this is auth id',auth.user.id);
+  
+//   if (!auth) {
+//     console.error(`authwronh`);
+//     return res.status(404).json({ error: 'User not found' });
+//   }
+//   console.log("this is auth user", auth.user);
+  
+//   const user = await USER.findOne(
+//     {_id: auth.user},
+//     {childage:1, childname:1},
+//     {new: true}
+//   );
+
+//   console.log(`user exists`, user);
+//   // console.log(user);
+//   return res.json({"user_details" : user}); 
+
+// }
+
+
 async function getuser(req, res) {
-  const token = req.headers.authorization;
-  console.log('received', token.split(' ')[1]);
-  
-  const auth = await USERAUTH.findOne(
-    {token: token.split(' ')[1].trim()},
-    {user:1, email:1},
-    {new: true}
-  );
-  console.log(auth._id);
-  
-  if (!auth) {
-    console.error(`authwronh`);
-    return res.status(404).json({ error: 'User not found' });
+  try {
+    // Extract token from Authorization header
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ error: 'Authorization header missing or invalid' });
+    }
+    
+    const token = authHeader.split(' ')[1].trim();
+    console.log('Received token:', token);
+
+    // Find user in USERAUTH collection by token
+    const auth = await USERAUTH.findOne(
+      { token: token },
+      { user: 1, email: 1 }
+    );
+
+    if (!auth) {
+      console.error('UserAuth not found for provided token');
+      return res.status(404).json({ error: 'User not found' });
+    }
+    console.log('UserAuth found:', auth);
+
+    // Find the associated user in the USER collection
+    const user = await USER.findOne(
+      { _id: auth.user },
+      { childage: 1, childname: 1 }
+    );
+
+    if (!user) {
+      console.error('User not found in USER collection');
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    console.log('User found:', user);
+    return res.status(200).json({ user_details: user });
+
+  } catch (error) {
+    console.error('Error in getuser:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
-  console.log("this is auth user", auth.user);
-  
-  const user = await USER.findOne(
-    {_id: auth.user},
-    {childage:1, childname:1},
-    {new: true}
-  );
-
-  console.log(`user exists`, user);
-  // console.log(user);
-  return res.json({"user_details" : user}); 
-
 }
+
+
+
 
 
 async function loginuser(req, res) {
